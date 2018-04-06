@@ -1,4 +1,4 @@
-// Rank: 193 424 - Gold League 
+// Rank: 193/424 - Gold League 
 
 #include <iostream>
 #include <string>
