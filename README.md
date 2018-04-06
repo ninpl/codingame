@@ -11,5 +11,7 @@ Mi [codingame profile](https://www.codingame.com/profile/ca5fbc07c41e8af7ee0e486
 |:-------------:|:-------------:|:-------------:|
 | EASY          |*ALL*          | `C++`         |
 | MEDIUM        |*ALL*	        | `C++`         |  
-| HARD          |-              | -             | 
-| COMMUNITY     |-              | -             | 
+| HARD          |*14 / 17*     	| `C++`         | 
+| VERY HARD     |*02 / 07*     	| `C++`         | 
+| COMMUNITY     |-             	| -             | 
+| MULTIPLAYER   |*01 / -*       | `C++`         | 
