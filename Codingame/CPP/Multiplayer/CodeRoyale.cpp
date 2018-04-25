@@ -1,4 +1,4 @@
-// Rank: 69/236 - Wood 1 League 
+// Rank: 11/348 - Bronze League 
 
 #include <algorithm>
 #include <assert.h>
@@ -100,6 +100,7 @@ class Site {
   public:
 	// Common Variables
 	int id, r;
+	int goldRemaining, maxGoldRate;
 	class Point pos;
 	enum class SiteType type;
 	enum class PlayerType owner;
@@ -107,7 +108,7 @@ class Site {
 	int barracksDelay;
 	enum class UnitType barracksUnit;
 	// Mine Variables
-	int mineGoldRate;
+	int mineGoldRate, mineMaxGoldRate;
 	// Tower Variables
 	int towerHP, towerAttackRange;
 
@@ -173,6 +174,7 @@ const int COST_KNIGHT = 80;
 int siteCount;
 int unitCount;
 int gold, touchedSite;
+int curGoldRate;
 
 // Site Variables
 vector<class Site> allSites;
@@ -261,6 +263,9 @@ void categorizeSites() {
 			else if (site.type == SiteType::TOWER) {
 				friendlyTowers.pb(site);
 			}
+			else if (site.type == SiteType::MINE) {
+				friendlyMines.pb(site);
+			}
 		}
 		else if (site.owner == PlayerType::ENEMY) {
 			enemySites.pb(site);
@@ -280,6 +285,9 @@ void categorizeSites() {
 			}
 			else if (site.type == SiteType::TOWER) {
 				enemyTowers.pb(site);
+			}
+			else if (site.type == SiteType::MINE) {
+				enemyMines.pb(site);
 			}
 		}
 		else {
@@ -453,12 +461,16 @@ class Point evade(class Unit nearestEnemy) {
 void readSiteData() {
 
 	REP(i, siteCount) {
-		int id, _1, _2, structure, owner, param1, param2;
-		scanf("%d %d %d %d %d %d %d", &id, &_1, &_2, &structure, &owner, &param1, &param2);
+		int id, goldRemaining, maxGoldRate, structure, owner, param1, param2;
+		scanf("%d %d %d %d %d %d %d", &id, &goldRemaining, &maxGoldRate, &structure, &owner, &param1, &param2);
 		int siteIndex = findIndexOfSiteByID(id);
 		class Site &site = allSites[siteIndex];
 		site.type = SiteType(structure);
 		site.owner = PlayerType(owner);
+		site.goldRemaining = goldRemaining;
+		if (maxGoldRate != -1) {
+			site.maxGoldRate = maxGoldRate;
+		}
 
 		if (site.type == SiteType::TOWER) {
 			site.towerHP = param1;
@@ -467,6 +479,9 @@ void readSiteData() {
 		else if (site.type == SiteType::BARRACKS) {
 			site.barracksDelay = param1;
 			site.barracksUnit = UnitType(param2);
+		}
+		else if (site.type == SiteType::MINE) {
+			site.mineGoldRate = param1;
 		}
 	}
 }
@@ -484,6 +499,15 @@ void readUnitData() {
 		allUnits.pb(Unit(hp, pos, PlayerType(owner), UnitType(type)));
 
 		//DB("UNIT = %d %d %d %d %d\n", x, y, owner, type, hp);
+	}
+}
+
+void calculateGlobals() {
+
+	// Calculate the current ammount of gold being generated
+	curGoldRate = 0;
+	REP(i, friendlyMines.size()) {
+		curGoldRate += friendlyMines[i].mineGoldRate;
 	}
 }
 
@@ -515,10 +539,19 @@ int main() {
 		sortUnits();
 
 		DB("NEAREST NEUTRAL SITE : %d\n", neutralSites[0].id);
+		DB("FRIENDLY MINES    : %d\n", friendlyMines.size());
 		DB("FRIENDLY BARRACKS    : %d\n", friendlyBarracks.size());
 		DB("FRIENDLY TOWERS      : %d\n", friendlyTowers.size());
 
-        if (friendlyBarracks.size() < 1) {
+		if (friendlyMines.size() < 2) {
+			if (neutralSites.size() > 0) {
+				printf("BUILD %d MINE\n", neutralSites[0].id);
+			}
+			else {
+				printf("WAIT\n");
+			}
+		}
+		else if (friendlyBarracks.size() < 1) {
 			if (neutralSites.size() > 0) {
 				printf("BUILD %d BARRACKS-KNIGHT\n", neutralSites[0].id);
 			}
@@ -526,15 +559,27 @@ int main() {
 				printf("WAIT\n");
 			}
 		}
-		else if (friendlyTowers.size() < 2) {
+		else if (friendlyTowers.size() < 1) {
 			if (neutralSites.size() > 0) {
 				printf("BUILD %d TOWER\n", neutralSites[0].id);
 			}
 			else {
 				printf("WAIT\n");
 			}
-		}else {
-			printf("WAIT\n");
+		}
+		else {
+			// Re-energize mines
+			DB("MAX MINE RATES : %d %d", friendlyMines[0].maxGoldRate, friendlyMines[1].maxGoldRate);
+			if (friendlyMines[0].mineGoldRate < friendlyMines[0].maxGoldRate) {
+				printf("BUILD %d MINE\n", friendlyMines[0].id);
+			}
+			else if (friendlyMines[1].mineGoldRate < friendlyMines[1].maxGoldRate) {
+				printf("BUILD %d MINE\n", friendlyMines[1].id);
+			}
+			// Repair Towers
+			else {
+				printf("BUILD %d TOWER\n", friendlyTowers[0].id);
+			}
 		}
 
 		// Train all barracks to pump knights
