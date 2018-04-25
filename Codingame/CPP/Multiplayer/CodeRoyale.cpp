@@ -1,4 +1,4 @@
-// Rank: 11/348 - Bronze League 
+// Rank: 2/349 - Silver League 
 
 #include <algorithm>
 #include <assert.h>
