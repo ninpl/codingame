@@ -28,6 +28,9 @@ public class World
     public World()
     { }
 
+    public const int knightCost = 80;
+    public const int archerCost = 100;
+    public const int giantCost = 140;
     public List<Site> Sites { get; set; } = new List<Site>();
     public List<Unit> Units { get; set; } = new List<Unit>();
     public int Gold { get; set; }
