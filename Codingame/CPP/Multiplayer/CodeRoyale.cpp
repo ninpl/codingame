@@ -171,7 +171,6 @@ const int COST_KNIGHT = 80;
 int siteCount;
 int unitCount;
 int gold, touchedSite;
-int conteo;
 
 // Site Variables
 vector<class Site> allSites;
@@ -260,9 +259,6 @@ void categorizeSites() {
 			else if (site.type == SiteType::TOWER) {
 				friendlyTowers.pb(site);
 			}
-			else if (site.type == SiteType::MINE) {
-				friendlyMines.pb(site);
-			}
 		}
 		else if (site.owner == PlayerType::ENEMY) {
 			enemySites.pb(site);
@@ -282,9 +278,6 @@ void categorizeSites() {
 			}
 			else if (site.type == SiteType::TOWER) {
 				enemyTowers.pb(site);
-			}
-			else if (site.type == SiteType::MINE) {
-				enemyMines.pb(site);
 			}
 		}
 		else {
@@ -473,9 +466,6 @@ void readSiteData() {
 			site.barracksDelay = param1;
 			site.barracksUnit = UnitType(param2);
 		}
-		else if (site.type == SiteType::MINE) {
-			site.mineGoldRate = param1;
-		}
 	}
 }
 
@@ -523,18 +513,27 @@ int main() {
 		sortUnits();
 
 		DB("NEAREST NEUTRAL SITE : %d\n", neutralSites[0].id);
-		DB("FRIENDLY MINES    : %d\n", friendlyMines.size());
 		DB("FRIENDLY BARRACKS    : %d\n", friendlyBarracks.size());
 		DB("FRIENDLY TOWERS      : %d\n", friendlyTowers.size());
 
-        if (neutralSites.size() > 0 && conteo < 5) {
+        if (friendlyBarracks.size() < 1) {
+			if (neutralSites.size() > 0) {
 				printf("BUILD %d BARRACKS-KNIGHT\n", neutralSites[0].id);
-				conteo++;
 			}
 			else {
 				printf("WAIT\n");
-			} 
-            
+			}
+		}
+		else if (friendlyTowers.size() < 2) {
+			if (neutralSites.size() > 0) {
+				printf("BUILD %d TOWER\n", neutralSites[0].id);
+			}
+			else {
+				printf("WAIT\n");
+			}
+		}else {
+			printf("WAIT\n");
+		}
 
 		// Train all barracks to pump knights
 		vector<int> trainableBarracks = getTrainableBarracksID();
