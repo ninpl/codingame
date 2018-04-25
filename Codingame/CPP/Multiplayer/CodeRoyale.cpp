@@ -1,3 +1,5 @@
+// Rank: 69/236 - Wood 1 League 
+
 #include <algorithm>
 #include <assert.h>
 #include <ctype.h>
