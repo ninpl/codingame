@@ -7,6 +7,10 @@ Mi [codingame profile](https://www.codingame.com/profile/ca5fbc07c41e8af7ee0e486
 
 ---
 
+<p align="center"><img src="https://github.com/MoonAntonio/codingame/blob/master/res/codingame.png?raw=true"></p>
+
+---
+
 |**LEVEL**      |**SOLVED**     |**LANGUAGES**  |
 |:-------------:|:-------------:|:-------------:|
 | EASY          |*ALL*          | `C++`         |
